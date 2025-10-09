@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eleVAlink</title>
+<link rel="stylesheet" href="frontend/css/stylesite.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+<body>
+
+<div class="hero">
+    <h1 class="hero-title">eleVAlink</h1>
+</div>
+
+<section class="description">
+    <div class="desc-content">
+        <h2>Sobre o Projeto</h2>
+        <p>Nosso projeto busca criar um sistema inteligente de monitoramento e automação, garantindo eficiência e praticidade.</p>
+        <img src="imagens/Fernando.jpg" alt="eleVAlink-demonstração">
+    </div>
+</section>
+
+<section class="description alt">
+    <div class="desc-content">
+        <h2>Funcionalidades</h2>
+        <p>O sistema inclui sensores, alertas em tempo real e integração com aplicativos móveis para facilitar o uso do dia a dia.</p>
+        <img src="imagens/Fernando.jpg" alt="Funcionalidades do projeto">
+    </div>
+</section>
+
+<section class="models-section">
+    <h2>Modelos 3D do Projeto</h2>
+    <div class="models-container">
+        <div class="model-card">
+            <h3>Dispositivo</h3>
+            <model-viewer src="frontend/modelos3d/dispositivo.glb" alt="Modelo 3D do Dispositivo" auto-rotate camera-controls></model-viewer>
+        </div>
+        <div class="model-card">
+            <h3>Elevador</h3>
+            <model-viewer src="frontend/modelos3d/elevador.glb" alt="Modelo 3D do Elevador" auto-rotate camera-controls></model-viewer>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Seção do botão para Dashboard ===== -->
+<section class="dashboard-section">
+    <h2>Acesse nossa Dashboard</h2>
+    <p>Aperte esse botão para ser redirecionado para nossa dashboard e visualizar os dados do projeto em tempo real.</p>
+    <button class="dashboard-button" onclick="window.location.href='dashboard.html'">
+        Ir para a Dashboard
+    </button>
+</section>
+
+<section class="team-section">
+    <h2 class="team-title">Nossa Equipe</h2>
+    <div class="team">
+        <!-- Cards inseridos via JS -->
+    </div>
+</section>
+
+<script src="/frontend/js/scriptsite.js"></script>
+</body>
+</html>
