@@ -1,68 +1,61 @@
-# api.py
-import sqlite3
-import pandas as pd
 from flask import Flask, jsonify
-from flask_cors import CORS # Importa o CORS
+from flask_cors import CORS
+from datetime import datetime
+import random
+import time
 
-# --- Configuração do App Flask ---
 app = Flask(__name__)
-# Habilita o CORS para permitir que seu HTML (de um domínio diferente)
-# acesse esta API. Essencial para o desenvolvimento.
 CORS(app)
-
-DB_FILE = "elevador.db"
-
-def carregar_dados_do_banco(limit=50):
-    """Função para buscar dados do banco de dados."""
-    conn = sqlite3.connect(DB_FILE)
-    # Seleciona as colunas mais importantes e ordena pela mais recente
-    query = f"SELECT timestamp_unix, progresso, angulo_x, angulo_y, status FROM leituras ORDER BY id DESC LIMIT {limit}"
-    df = pd.read_sql_query(query, conn)
-    conn.close()
-    if not df.empty:
-        # --- CORREÇÃO APLICADA AQUI ---
-        # Convertemos a coluna para datetime e depois aplicamos a função
-        # isoformat() a cada linha individualmente com .apply()
-        datetime_series = pd.to_datetime(df['timestamp_unix'], unit='s')
-        df['timestamp'] = datetime_series.apply(lambda dt: dt.isoformat())
-    return df
-
-# --- Definição dos Endpoints da API ---
 
 @app.route('/')
 def index():
-    """Endpoint inicial apenas para testar se a API está no ar."""
     return "API do Elevador está funcionando!"
 
 @app.route('/api/dados/latest')
 def get_latest_data():
     """
-    Endpoint que retorna a leitura MAIS RECENTE do banco de dados.
+    Retorna uma leitura simulada completa com todos os sensores.
     """
-    df = carregar_dados_do_banco(limit=1)
-    if df.empty:
-        # Retorna um erro 404 se não houver dados
-        return jsonify({"error": "Nenhum dado encontrado"}), 404
-    
-    # Converte a primeira (e única) linha do DataFrame para um dicionário e o retorna como JSON
-    latest_data = df.iloc[0].to_dict()
-    return jsonify(latest_data)
+    data = {
+        "progresso": round(random.uniform(0, 1000), 2),
+        "angulo_x": round(random.uniform(-30, 30), 2),
+        "angulo_y": round(random.uniform(-30, 30), 2),
+        "status": random.choice([0,1]),
+        "bmi160": {
+            "accel": {
+                "x": round(random.uniform(-2, 2), 2),
+                "y": round(random.uniform(-2, 2), 2),
+                "z": round(random.uniform(-2, 2), 2)
+            },
+            "gyro": {
+                "x": round(random.uniform(-250, 250), 2),
+                "y": round(random.uniform(-250, 250), 2),
+                "z": round(random.uniform(-250, 250), 2)
+            }
+        },
+        "tfluna": {
+            "distance": round(random.uniform(10, 2000), 1),
+            "temperature": round(random.uniform(20, 40), 1),
+            "strength": random.randint(0, 100)
+        },
+        "vl53l1x": {
+            "distance": round(random.uniform(10, 4000), 1)
+        },
+        "ina219": {
+            "current": round(random.uniform(0, 5000), 2)
+        },
+        "rtc": {
+            "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        },
+        "joystick": {
+            "x": random.randint(-100, 100),
+            "y": random.randint(-100, 100),
+            "button": random.choice([0,1])
+        }
+    }
 
-@app.route('/api/dados/history')
-def get_history_data():
-    """
-    Endpoint que retorna o HISTÓRICO de leituras (últimas 50).
-    """
-    df = carregar_dados_do_banco(limit=50)
-    if df.empty:
-        return jsonify({"error": "Nenhum dado encontrado"}), 404
-    
-    # Converte o DataFrame inteiro para uma lista de dicionários e retorna como JSON
-    history_data = df.to_dict(orient='records')
-    return jsonify(history_data)
+    return jsonify(data)
 
-# --- Execução da API ---
 if __name__ == '__main__':
-    # Roda a API na rede local, na porta 5000.  
-    # O 'debug=True' faz com que o servidor reinicie automaticamente quando você salva o arquivo.
+    # Roda na rede local na porta 5000
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -18,7 +18,8 @@
     <div class="container">
         <h1>Dashboard de Monitoramento</h1>
 
-        <div class="metrics-grid">
+        <!-- Métricas principais -->
+        <div class="metrics-grid" id="metrics-grid">
             <div class="card status-card tilt-card">
                 <h2>Status</h2>
                 <p id="status-value">--</p>
@@ -39,10 +40,16 @@
                 <p id="angulo-y-value">--</p>
             </div>
         </div>
+
+        <!-- Dados crus -->
+        <h2>Dados Crus</h2>
+        <div class="metrics-grid" id="raw-data-grid">
+            <!-- Cards dos sensores crus serão gerados aqui -->
+        </div>
     </div>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
-    <script src="/frontend/js/dashboard.js"></script>
+    <script src="frontend/js/dashboard.js"></script>
 </body>
 </html>
