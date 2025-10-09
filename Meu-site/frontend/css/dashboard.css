@@ -1,0 +1,133 @@
+/* ==== Configurações Gerais ==== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top left, #001f3f, #000);
+    color: #fff;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* ==== Fundo animado ==== */
+.background-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(0, 102, 204, 0.15), transparent 70%);
+    z-index: 0;
+    animation: pulse 8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* ==== Container principal ==== */
+.container {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+/* ==== Título ==== */
+.container h1 {
+    font-size: 2.2rem;
+    margin-bottom: 50px;
+    text-shadow: 0 0 15px rgba(0, 170, 255, 0.7);
+}
+
+/* ==== Grade de métricas ==== */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    justify-content: center;
+}
+
+/* ==== Cartões ==== */
+.card {
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 15px;
+    padding: 30px 25px;
+    box-shadow: 0 0 25px rgba(0, 170, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 40px rgba(0, 170, 255, 0.6);
+}
+
+/* ==== Texto dentro dos cartões ==== */
+.card h2 {
+    color: #00aaff;
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+}
+
+.card p {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* ==== Cartão de Status especial ==== */
+.status-card p {
+    font-size: 1.5rem;
+    color: #00ff99;
+}
+
+/* ==== Tilt Effect ==== */
+.tilt-card {
+    transform-style: preserve-3d;
+}
+
+/* ==== Botão de Voltar ==== */
+.back-button {
+    position: fixed;
+    top: 25px;
+    left: 25px;
+    background: linear-gradient(90deg, #0066cc, #00aaff);
+    color: white;
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 0 20px rgba(0, 170, 255, 0.4);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards;
+}
+
+.back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 35px rgba(0, 170, 255, 0.8);
+    background: linear-gradient(90deg, #0099ff, #33ccff);
+}
+
+/* ==== Animação suave de entrada ==== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==== Responsividade ==== */
+@media (max-width: 768px) {
+    .container h1 {
+        font-size: 1.8rem;
+    }
+    .card p {
+        font-size: 1.4rem;
+    }
+    .back-button {
+        top: 15px;
+        left: 15px;
+        padding: 8px 18px;
+        font-size: 0.9rem;
+    }
+}
