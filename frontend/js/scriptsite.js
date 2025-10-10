@@ -1,6 +1,6 @@
 // ==== Seção de equipe ====
 const team = [
-  { nome: "César Augusto", linkedin: "https://www.linkedin.com/in/c%C3%A9sar-augusto-83b97237b", telefone: "(68) 9205-8721", foto: "imagens/fernando.jpg" },
+  { nome: "César Augusto", linkedin: "https://www.linkedin.com/in/c%C3%A9sar-augusto-83b97237b", telefone: "(68) 99205-8721", foto: "imagens/fernando.jpg" },
   { nome: "Fernando Castanha", linkedin: "https://www.linkedin.com/in/fernando-castanha-tornelli-235412352/", telefone: "(11) 99136-7940", foto: "imagens/fernando.jpg" },
   { nome: "Gabriel Assis", linkedin: "https://linkedin.com/in/carla", telefone: "(11) 94523-5478", foto: "imagens/fernando.jpg" },
   { nome: "Luiz Barros", linkedin: "https://www.linkedin.com/in/luizhenriquebarros/", telefone: "(11) 99410-9391", foto: "imagens/fernando.jpg" },
