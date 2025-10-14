@@ -2,7 +2,7 @@
 const team = [
   { nome: "César Augusto", linkedin: "https://www.linkedin.com/in/c%C3%A9sar-augusto-83b97237b", telefone: "(68) 99205-8721", foto: "imagens/Fernando.jpg" },
   { nome: "Fernando Castanha", linkedin: "https://www.linkedin.com/in/fernando-castanha-tornelli-235412352/", telefone: "(11) 99136-7940", foto: "imagens/Fernando.jpg" },
-  { nome: "Gabriel Assis", linkedin: "https://www.linkedin.com/in/gabriel-assis-7044b938a/", telefone: "(11) 94523-5478", foto: "imagens/Gabriel.jpg" },
+  { nome: "Gabriel Assis", linkedin: "https://www.linkedin.com/in/gabriel-assis-7044b938a/", telefone: "(11) 94523-5478", foto: "imagens/gabriel.jpg" },
   { nome: "Luiz Barros", linkedin: "https://www.linkedin.com/in/luizhenriquebarros/", telefone: "(11) 99410-9391", foto: "imagens/Fernando.jpg" },
   { nome: "Nicholas Maretto", linkedin: "https://www.linkedin.com/in/nicmaretto", telefone: "(11) 97517-1310", foto: "imagens/Fernando.jpg" },
   { nome: "Rafael Lucca Bazan", linkedin: "https://www.linkedin.com/in/rafaelluccabazan", telefone: "(11) 98811-5600", foto: "imagens/Fernando.jpg" },
