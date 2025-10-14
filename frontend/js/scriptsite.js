@@ -37,7 +37,7 @@ document.querySelectorAll('.member-card').forEach(card => observer.observe(card)
 // ==== Fade-in do título ====
 const heroTitle = document.querySelector('.hero-title');
 window.addEventListener('load', () => {
-  setTimeout(() => heroTitle.classList.add('show'), 200);
+  setTimeout(() => heroTitle.classList.add('show'), 1000);
 });
 
 // ==== Visualizador STL ====
