@@ -81,4 +81,3 @@ loader.load("dispositivo.stl", geometry => {
   }
   animate();
 });
- 
