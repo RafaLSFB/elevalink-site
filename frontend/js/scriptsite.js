@@ -6,7 +6,7 @@ const team = [
   { nome: "Luiz Barros", linkedin: "https://www.linkedin.com/in/luizhenriquebarros/", telefone: "(11) 99410-9391", foto: "imagens/fernando.jpg" },
   { nome: "Nicholas Maretto", linkedin: "https://www.linkedin.com/in/nicmaretto", telefone: "(11) 97517-1310", foto: "imagens/fernando.jpg" },
   { nome: "Rafael Lucca Bazan", linkedin: "https://www.linkedin.com/in/rafaelluccabazan", telefone: "(11) 98811-5600", foto: "imagens/fernando.jpg" },
-];
+]
 
 const teamContainer = document.querySelector('.team');
 
@@ -81,3 +81,4 @@ loader.load("dispositivo.stl", geometry => {
   }
   animate();
 });
+ 
