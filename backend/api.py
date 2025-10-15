@@ -11,7 +11,7 @@ CORS(app)
 # =============================
 # CONFIGURAÇÃO
 # =============================
-USE_SIMULATED_DATA = False  # True = dados simulados | False = dados reais do SQLite
+USE_SIMULATED_DATA = True  # True = dados simulados | False = dados reais do SQLite
 DB_FILE = 'elevador.db'
 
 # =============================
