@@ -1,5 +1,5 @@
 const API_BASE_URL = 'http://127.0.0.1:5000/api/dados';
-const UPDATE_INTERVAL = 1000; // 1 segundo
+const UPDATE_INTERVAL = 500; // meio segundo
 const rawDataGrid = document.getElementById('raw-data-grid');
 const modeToggleButton = document.getElementById('mode-toggle-button');
 
