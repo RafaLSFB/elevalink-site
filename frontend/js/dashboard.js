@@ -5,12 +5,19 @@ const modeToggleButton = document.getElementById('mode-toggle-button');
 
 let expandedStates = {};
 let mode = 'simulado'; // simulado ou real
+let updateIntervalId = null;
 
 // Alterna modo
 modeToggleButton.addEventListener('click', () => {
     mode = mode === 'simulado' ? 'real' : 'simulado';
     modeToggleButton.textContent = `Modo: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
-    resetValues(); // Zera tudo ao trocar de modo
+    resetValues();
+
+    // Reinicia o intervalo para respeitar o modo atual
+    if (updateIntervalId) clearInterval(updateIntervalId);
+    updateIntervalId = setInterval(fetchData, UPDATE_INTERVAL);
+
+    fetchData(); // força atualização imediata no novo modo
 });
 
 // Atualiza os cards principais
@@ -136,26 +143,20 @@ function resetValues() {
 // Busca dados (API real ou simulado)
 async function fetchData() {
     try {
-        let latestData;
-
-        if (mode === 'simulado') {
-            latestData = generateSimulatedData();
-        } else {
+        if (mode === 'real') {
             const response = await fetch(`${API_BASE_URL}/latest`);
             if (response.ok) {
-                latestData = await response.json();
+                const latestData = await response.json();
+                updateMetrics(latestData);
+                updateRawData(latestData);
             } else {
-                latestData = null; // Se não houver dados reais, zera tudo
+                resetValues(); // Nenhum dado real
             }
-        }
-
-        if (latestData) {
+        } else if (mode === 'simulado') {
+            const latestData = generateSimulatedData();
             updateMetrics(latestData);
             updateRawData(latestData);
-        } else {
-            resetValues();
         }
-
     } catch (error) {
         console.error('Falha ao atualizar dashboard:', error);
         if (mode === 'real') resetValues();
@@ -165,7 +166,7 @@ async function fetchData() {
 // Inicializa dashboard
 function initializeDashboard() {
     fetchData();
-    setInterval(fetchData, UPDATE_INTERVAL);
+    updateIntervalId = setInterval(fetchData, UPDATE_INTERVAL);
 
     VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
         max: 10,
@@ -174,7 +175,6 @@ function initializeDashboard() {
         "max-glare": 0.2
     });
 
-    // Define texto inicial do botão
     modeToggleButton.textContent = `Modo: Simulado`;
 }
 
