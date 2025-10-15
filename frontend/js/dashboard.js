@@ -1,5 +1,5 @@
 const API_BASE_URL = 'http://127.0.0.1:5000/api/dados';
-const UPDATE_INTERVAL = 10000; // 10 segundos
+const UPDATE_INTERVAL = 5000; // 10 segundos
 const rawDataGrid = document.getElementById('raw-data-grid');
 let expandedStates = {}; // Armazena quais cards estão abertos
 
