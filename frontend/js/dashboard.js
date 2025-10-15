@@ -1,4 +1,7 @@
 const API_BASE_URL = 'http://127.0.0.1:5000/api/dados';
+const UPDATE_INTERVAL = 10000; // 10 segundos
+const rawDataGrid = document.getElementById('raw-data-grid');
+let expandedStates = {}; // Armazena quais cards estão abertos
 
 // Atualiza os cards principais
 function updateMetrics(data) {
@@ -20,47 +23,50 @@ function updateMetrics(data) {
     }
 }
 
-// ==== Dados crus como cards expansíveis ====
-const rawDataGrid = document.getElementById('raw-data-grid');
-
+// Cria um card expansível com controle de estado
 function createExpandableCard(title, fields) {
     const card = document.createElement('div');
     card.classList.add('card', 'tilt-card', 'expandable-card');
 
-    // Título do card
     const header = document.createElement('h2');
     header.textContent = title;
     card.appendChild(header);
 
-    // Container dos detalhes, inicialmente oculto
     const details = document.createElement('div');
     details.classList.add('details');
-    details.style.display = 'none';
 
+    // Preenche os dados
     for (const [key, value] of Object.entries(fields)) {
         const p = document.createElement('p');
         p.innerHTML = `<strong>${key}:</strong> ${value}`;
         details.appendChild(p);
     }
 
-    card.appendChild(details);
+    // Estado inicial baseado no histórico
+    const isExpanded = expandedStates[title] ?? false;
+    details.style.display = isExpanded ? 'block' : 'none';
 
-    // Toggle expand/collapse ao clicar no card
+    // Alternar visibilidade ao clicar
     card.addEventListener('click', () => {
-        if (details.style.display === 'none') {
-            details.style.display = 'block';
-        } else {
-            details.style.display = 'none';
-        }
+        const isVisible = details.style.display === 'block';
+        details.style.display = isVisible ? 'none' : 'block';
+        expandedStates[title] = !isVisible;
     });
 
+    card.appendChild(details);
     rawDataGrid.appendChild(card);
 }
 
 function updateRawData(data) {
+    // Guarda quais cards estavam expandidos antes da atualização
+    const currentStates = { ...expandedStates };
+
     rawDataGrid.innerHTML = '';
 
-    // Garantir que todos os sensores existam
+    // Mantém o estado anterior
+    expandedStates = { ...currentStates };
+
+    // Garante que todos os sensores existam
     const bmi160 = data.bmi160 || { accel:{x:'--',y:'--',z:'--'}, gyro:{x:'--',y:'--',z:'--'} };
     const tfluna = data.tfluna || { distance:'--', temperature:'--', strength:'--' };
     const vl53l1x = data.vl53l1x || { distance:'--' };
@@ -68,7 +74,6 @@ function updateRawData(data) {
     const rtc = data.rtc || { time:'--' };
     const joystick = data.joystick || { x:'--', y:'--', button:'--' };
 
-    // Criar cards individuais
     createExpandableCard('BMI160', {
         'Accel X': bmi160.accel.x,
         'Accel Y': bmi160.accel.y,
@@ -120,7 +125,7 @@ async function fetchData() {
 
 function initializeDashboard() {
     fetchData();
-    setInterval(fetchData, 5000); // Atualiza a cada 5 segundos
+    setInterval(fetchData, UPDATE_INTERVAL); // Atualiza a cada 10s
 
     VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
         max: 10,
