@@ -1,22 +1,21 @@
-// ============================
-// CONFIGURAÇÃO DE MODO
-// ============================
-const USE_SIMULATED_DATA = true; // true = simulado, false = real
-const API_REAL_URL = 'https://SEU_SERVIDOR_REAL/api/dados/latest'; // colocar a URL real quando sensores estiverem online
+const API_BASE_URL = 'http://127.0.0.1:5000/api/dados';
 const UPDATE_INTERVAL = 10000; // 10 segundos
-
-// ============================
-// ELEMENTOS
-// ============================
 const rawDataGrid = document.getElementById('raw-data-grid');
-let expandedStates = {}; // guarda quais cards estão abertos
+const modeToggleButton = document.getElementById('mode-toggle-button');
 
-// ============================
-// FUNÇÕES AUXILIARES
-// ============================
+let expandedStates = {};
+let mode = 'simulado'; // simulado ou real
+
+// Alterna modo
+modeToggleButton.addEventListener('click', () => {
+    mode = mode === 'simulado' ? 'real' : 'simulado';
+    modeToggleButton.textContent = `Modo: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
+    resetValues(); // Zera tudo ao trocar de modo
+});
 
 // Atualiza os cards principais
 function updateMetrics(data) {
+    if (!data) return;
     document.getElementById('progresso-value').textContent = data.progresso?.toFixed(2) ?? '--';
     document.getElementById('angulo-x-value').textContent = data.angulo_x?.toFixed(2) ?? '--';
     document.getElementById('angulo-y-value').textContent = data.angulo_y?.toFixed(2) ?? '--';
@@ -35,7 +34,7 @@ function updateMetrics(data) {
     }
 }
 
-// Cria um card expansível
+// Cria card expansível
 function createExpandableCard(title, fields) {
     const card = document.createElement('div');
     card.classList.add('card', 'tilt-card', 'expandable-card');
@@ -53,7 +52,6 @@ function createExpandableCard(title, fields) {
         details.appendChild(p);
     }
 
-    // Mantém estado anterior
     const isExpanded = expandedStates[title] ?? false;
     details.style.display = isExpanded ? 'block' : 'none';
 
@@ -67,8 +65,10 @@ function createExpandableCard(title, fields) {
     rawDataGrid.appendChild(card);
 }
 
-// Atualiza os dados crus
+// Atualiza dados crus
 function updateRawData(data) {
+    if (!data) return;
+
     const currentStates = { ...expandedStates };
     rawDataGrid.innerHTML = '';
     expandedStates = { ...currentStates };
@@ -95,70 +95,74 @@ function updateRawData(data) {
         'Strength': tfluna.strength
     });
 
-    createExpandableCard('VL53L1X', {
-        'Distance': vl53l1x.distance
-    });
-
-    createExpandableCard('INA219', {
-        'Current (mA)': ina219.current
-    });
-
-    createExpandableCard('RTC', {
-        'Time': rtc.time
-    });
-
-    createExpandableCard('Joystick', {
-        'X': joystick.x,
-        'Y': joystick.y,
-        'Button': joystick.button
-    });
+    createExpandableCard('VL53L1X', { 'Distance': vl53l1x.distance });
+    createExpandableCard('INA219', { 'Current (mA)': ina219.current });
+    createExpandableCard('RTC', { 'Time': rtc.time });
+    createExpandableCard('Joystick', { 'X': joystick.x, 'Y': joystick.y, 'Button': joystick.button });
 }
 
-// ============================
-// GERAÇÃO DE DADOS SIMULADOS
-// ============================
+// Simula dados
 function generateSimulatedData() {
     return {
-        "progresso": +(Math.random()*1000).toFixed(2),
-        "angulo_x": +(Math.random()*60-30).toFixed(2),
-        "angulo_y": +(Math.random()*60-30).toFixed(2),
-        "status": Math.random()>0.5?1:0,
+        "progresso": Math.random() * 1000,
+        "angulo_x": Math.random() * 60 - 30,
+        "angulo_y": Math.random() * 60 - 30,
+        "status": Math.random() > 0.1 ? 1 : 0,
         "bmi160": {
-            "accel": {x: +(Math.random()*4-2).toFixed(2), y: +(Math.random()*4-2).toFixed(2), z: +(Math.random()*4-2).toFixed(2)},
-            "gyro": {x: +(Math.random()*500-250).toFixed(2), y: +(Math.random()*500-250).toFixed(2), z: +(Math.random()*500-250).toFixed(2)}
+            "accel": { x: (Math.random()*4-2).toFixed(2), y:(Math.random()*4-2).toFixed(2), z:(Math.random()*4-2).toFixed(2) },
+            "gyro": { x:(Math.random()*500-250).toFixed(2), y:(Math.random()*500-250).toFixed(2), z:(Math.random()*500-250).toFixed(2) }
         },
-        "tfluna": {distance: +(Math.random()*2000+10).toFixed(1), temperature: +(Math.random()*20+20).toFixed(1), strength: Math.floor(Math.random()*100)},
-        "vl53l1x": {distance: +(Math.random()*4000+10).toFixed(1)},
-        "ina219": {current: +(Math.random()*5000).toFixed(2)},
-        "rtc": {time: new Date().toISOString()},
-        "joystick": {x: Math.floor(Math.random()*200-100), y: Math.floor(Math.random()*200-100), button: Math.random()>0.5?1:0}
+        "tfluna": { distance:(Math.random()*1990+10).toFixed(1), temperature:(Math.random()*20+20).toFixed(1), strength: Math.floor(Math.random()*100) },
+        "vl53l1x": { distance:(Math.random()*3990+10).toFixed(1) },
+        "ina219": { current:(Math.random()*5000).toFixed(2) },
+        "rtc": { time: new Date().toISOString() },
+        "joystick": { x: Math.floor(Math.random()*201-100), y: Math.floor(Math.random()*201-100), button: Math.random()>0.5?1:0 }
     };
 }
 
-// ============================
-// BUSCA DE DADOS
-// ============================
-async function fetchData() {
-    let data;
-    if (USE_SIMULATED_DATA) {
-        data = generateSimulatedData();
-    } else {
-        try {
-            const response = await fetch(API_REAL_URL);
-            data = response.ok ? await response.json() : {};
-        } catch(e) {
-            console.error("Erro ao buscar dados reais:", e);
-            data = {};
-        }
-    }
-
-    updateMetrics(data);
-    updateRawData(data);
+// Reseta todos os valores da dashboard
+function resetValues() {
+    document.getElementById('progresso-value').textContent = '--';
+    document.getElementById('angulo-x-value').textContent = '--';
+    document.getElementById('angulo-y-value').textContent = '--';
+    const statusValueElement = document.getElementById('status-value');
+    statusValueElement.textContent = '--';
+    const statusCardElement = statusValueElement.closest('.card');
+    statusCardElement.classList.remove('ok', 'erro');
+    rawDataGrid.innerHTML = '';
+    expandedStates = {};
 }
 
-// ============================
-// INICIALIZAÇÃO
-// ============================
+// Busca dados (API real ou simulado)
+async function fetchData() {
+    try {
+        let latestData;
+
+        if (mode === 'simulado') {
+            latestData = generateSimulatedData();
+        } else {
+            const response = await fetch(`${API_BASE_URL}/latest`);
+            if (response.ok) {
+                latestData = await response.json();
+            } else {
+                latestData = null; // Se não houver dados reais, zera tudo
+            }
+        }
+
+        if (latestData) {
+            updateMetrics(latestData);
+            updateRawData(latestData);
+        } else {
+            resetValues();
+        }
+
+    } catch (error) {
+        console.error('Falha ao atualizar dashboard:', error);
+        if (mode === 'real') resetValues();
+    }
+}
+
+// Inicializa dashboard
 function initializeDashboard() {
     fetchData();
     setInterval(fetchData, UPDATE_INTERVAL);
@@ -169,6 +173,9 @@ function initializeDashboard() {
         glare: true,
         "max-glare": 0.2
     });
+
+    // Define texto inicial do botão
+    modeToggleButton.textContent = `Modo: Simulado`;
 }
 
 document.addEventListener('DOMContentLoaded', initializeDashboard);
