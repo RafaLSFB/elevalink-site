@@ -286,7 +286,7 @@ footer {
 }
 
 .logo-fade {
-  width: 700px; /* ajuste o tamanho conforme quiser */
+  width: 600px; /* ajuste o tamanho conforme quiser */
   opacity: 0;
   transform: translateX(-50px);
   animation: fadeInLeft 3s ease forwards;
