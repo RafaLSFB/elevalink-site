@@ -1,7 +1,28 @@
 const API_BASE_URL = 'http://127.0.0.1:5000/api/dados';
+const UPDATE_INTERVAL = 500; // meio segundo
+const rawDataGrid = document.getElementById('raw-data-grid');
+const modeToggleButton = document.getElementById('mode-toggle-button');
+
+let expandedStates = {};
+let mode = 'simulado'; // simulado ou real
+let updateIntervalId = null;
+
+// Alterna modo
+modeToggleButton.addEventListener('click', () => {
+    mode = mode === 'simulado' ? 'real' : 'simulado';
+    modeToggleButton.textContent = `Modo: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
+    resetValues();
+
+    // Reinicia o intervalo para respeitar o modo atual
+    if (updateIntervalId) clearInterval(updateIntervalId);
+    updateIntervalId = setInterval(fetchData, UPDATE_INTERVAL);
+
+    fetchData(); // força atualização imediata no novo modo
+});
 
 // Atualiza os cards principais
 function updateMetrics(data) {
+    if (!data) return;
     document.getElementById('progresso-value').textContent = data.progresso?.toFixed(2) ?? '--';
     document.getElementById('angulo-x-value').textContent = data.angulo_x?.toFixed(2) ?? '--';
     document.getElementById('angulo-y-value').textContent = data.angulo_y?.toFixed(2) ?? '--';
@@ -20,22 +41,17 @@ function updateMetrics(data) {
     }
 }
 
-// ==== Dados crus como cards expansíveis ====
-const rawDataGrid = document.getElementById('raw-data-grid');
-
+// Cria card expansível
 function createExpandableCard(title, fields) {
     const card = document.createElement('div');
     card.classList.add('card', 'tilt-card', 'expandable-card');
 
-    // Título do card
     const header = document.createElement('h2');
     header.textContent = title;
     card.appendChild(header);
 
-    // Container dos detalhes, inicialmente oculto
     const details = document.createElement('div');
     details.classList.add('details');
-    details.style.display = 'none';
 
     for (const [key, value] of Object.entries(fields)) {
         const p = document.createElement('p');
@@ -43,24 +59,27 @@ function createExpandableCard(title, fields) {
         details.appendChild(p);
     }
 
-    card.appendChild(details);
+    const isExpanded = expandedStates[title] ?? false;
+    details.style.display = isExpanded ? 'block' : 'none';
 
-    // Toggle expand/collapse ao clicar no card
     card.addEventListener('click', () => {
-        if (details.style.display === 'none') {
-            details.style.display = 'block';
-        } else {
-            details.style.display = 'none';
-        }
+        const isVisible = details.style.display === 'block';
+        details.style.display = isVisible ? 'none' : 'block';
+        expandedStates[title] = !isVisible;
     });
 
+    card.appendChild(details);
     rawDataGrid.appendChild(card);
 }
 
+// Atualiza dados crus
 function updateRawData(data) {
-    rawDataGrid.innerHTML = '';
+    if (!data) return;
 
-    // Garantir que todos os sensores existam
+    const currentStates = { ...expandedStates };
+    rawDataGrid.innerHTML = '';
+    expandedStates = { ...currentStates };
+
     const bmi160 = data.bmi160 || { accel:{x:'--',y:'--',z:'--'}, gyro:{x:'--',y:'--',z:'--'} };
     const tfluna = data.tfluna || { distance:'--', temperature:'--', strength:'--' };
     const vl53l1x = data.vl53l1x || { distance:'--' };
@@ -68,7 +87,6 @@ function updateRawData(data) {
     const rtc = data.rtc || { time:'--' };
     const joystick = data.joystick || { x:'--', y:'--', button:'--' };
 
-    // Criar cards individuais
     createExpandableCard('BMI160', {
         'Accel X': bmi160.accel.x,
         'Accel Y': bmi160.accel.y,
@@ -84,43 +102,71 @@ function updateRawData(data) {
         'Strength': tfluna.strength
     });
 
-    createExpandableCard('VL53L1X', {
-        'Distance': vl53l1x.distance
-    });
-
-    createExpandableCard('INA219', {
-        'Current (mA)': ina219.current
-    });
-
-    createExpandableCard('RTC', {
-        'Time': rtc.time
-    });
-
-    createExpandableCard('Joystick', {
-        'X': joystick.x,
-        'Y': joystick.y,
-        'Button': joystick.button
-    });
+    createExpandableCard('VL53L1X', { 'Distance': vl53l1x.distance });
+    createExpandableCard('INA219', { 'Current (mA)': ina219.current });
+    createExpandableCard('RTC', { 'Time': rtc.time });
+    createExpandableCard('Joystick', { 'X': joystick.x, 'Y': joystick.y, 'Button': joystick.button });
 }
 
-// Busca dados da API
+// Simula dados
+function generateSimulatedData() {
+    return {
+        "progresso": Math.random() * 1000,
+        "angulo_x": Math.random() * 60 - 30,
+        "angulo_y": Math.random() * 60 - 30,
+        "status": Math.random() > 0.1 ? 1 : 0,
+        "bmi160": {
+            "accel": { x: (Math.random()*4-2).toFixed(2), y:(Math.random()*4-2).toFixed(2), z:(Math.random()*4-2).toFixed(2) },
+            "gyro": { x:(Math.random()*500-250).toFixed(2), y:(Math.random()*500-250).toFixed(2), z:(Math.random()*500-250).toFixed(2) }
+        },
+        "tfluna": { distance:(Math.random()*1990+10).toFixed(1), temperature:(Math.random()*20+20).toFixed(1), strength: Math.floor(Math.random()*100) },
+        "vl53l1x": { distance:(Math.random()*3990+10).toFixed(1) },
+        "ina219": { current:(Math.random()*5000).toFixed(2) },
+        "rtc": { time: new Date().toISOString() },
+        "joystick": { x: Math.floor(Math.random()*201-100), y: Math.floor(Math.random()*201-100), button: Math.random()>0.5?1:0 }
+    };
+}
+
+// Reseta todos os valores da dashboard
+function resetValues() {
+    document.getElementById('progresso-value').textContent = '--';
+    document.getElementById('angulo-x-value').textContent = '--';
+    document.getElementById('angulo-y-value').textContent = '--';
+    const statusValueElement = document.getElementById('status-value');
+    statusValueElement.textContent = '--';
+    const statusCardElement = statusValueElement.closest('.card');
+    statusCardElement.classList.remove('ok', 'erro');
+    rawDataGrid.innerHTML = '';
+    expandedStates = {};
+}
+
+// Busca dados (API real ou simulado)
 async function fetchData() {
     try {
-        const response = await fetch(`${API_BASE_URL}/latest`);
-        const latestData = response.ok ? await response.json() : {};
-
-        updateMetrics(latestData);
-        updateRawData(latestData);
+        if (mode === 'real') {
+            const response = await fetch(`${API_BASE_URL}/latest`);
+            if (response.ok) {
+                const latestData = await response.json();
+                updateMetrics(latestData);
+                updateRawData(latestData);
+            } else {
+                resetValues(); // Nenhum dado real
+            }
+        } else if (mode === 'simulado') {
+            const latestData = generateSimulatedData();
+            updateMetrics(latestData);
+            updateRawData(latestData);
+        }
     } catch (error) {
         console.error('Falha ao atualizar dashboard:', error);
-        updateMetrics({});
-        updateRawData({});
+        if (mode === 'real') resetValues();
     }
 }
 
+// Inicializa dashboard
 function initializeDashboard() {
     fetchData();
-    setInterval(fetchData, 5000); // Atualiza a cada 5 segundos
+    updateIntervalId = setInterval(fetchData, UPDATE_INTERVAL);
 
     VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
         max: 10,
@@ -128,6 +174,8 @@ function initializeDashboard() {
         glare: true,
         "max-glare": 0.2
     });
+
+    modeToggleButton.textContent = `Modo: Simulado`;
 }
 
 document.addEventListener('DOMContentLoaded', initializeDashboard);
