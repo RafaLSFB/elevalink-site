@@ -284,3 +284,22 @@ footer {
   transform: translateY(-3px);
   box-shadow: 0 0 40px rgba(0, 170, 255, 0.8);
 }
+
+.logo-fade {
+  width: 600px; /* ajuste o tamanho conforme quiser */
+  opacity: 0;
+  transform: translateX(-50px);
+  animation: fadeInLeft 3s ease forwards;
+}
+
+/* animação do fade in da esquerda pra direita */
+@keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
