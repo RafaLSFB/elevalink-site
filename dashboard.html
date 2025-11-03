@@ -5,57 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard de Monitoramento</title>
     <link rel="stylesheet" href="frontend/css/dashboard.css">
+    <link rel="icon" type="image/png" href="/imagens/icon.png">
 </head>
-
-<link rel="icon" type="image/png" href="/imagens/icon.png">
-
 <body>
 
-    <!-- Botão de Voltar -->
-    <a href="index.html" class="back-button">← Voltar</a>
-
-    <!-- Botão de Alternar Simulado/Real -->
-    <button id="mode-toggle-button" class="mode-button">Modo: Simulado</button>
-
-    <!-- Efeito de fundo -->
-    <div class="background-effect"></div>
-
-    <!-- Conteúdo principal -->
-    <div class="container">
-        <h1>Dashboard de Monitoramento</h1>
-
-        <!-- Métricas principais -->
-        <div class="metrics-grid" id="metrics-grid">
-            <div class="card status-card tilt-card">
-                <h2>Status</h2>
-                <p id="status-value">--</p>
-            </div>
-
-            <div class="card tilt-card">
-                <h2>Progresso (mm)</h2>
-                <p id="progresso-value">--</p>
-            </div>
-
-            <div class="card tilt-card">
-                <h2>Ângulo X (°)</h2>
-                <p id="angulo-x-value">--</p>
-            </div>
-
-            <div class="card tilt-card">
-                <h2>Ângulo Y (°)</h2>
-                <p id="angulo-y-value">--</p>
-            </div>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <img src="/imagens/elevalink.png" alt="ElevaLink Logo" class="sidebar-logo">
         </div>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="#">Dashboard</a></li>
+            <li><a href="#" id="settings-button">Configurações</a></li>
+        </ul>
+    </nav>
 
-        <!-- Dados crus -->
-        <h2>Dados Crus</h2>
-        <div class="metrics-grid" id="raw-data-grid">
-            <!-- Cards dos sensores crus serão gerados aqui -->
+    <main class="content-area">
+        
+        <div class="container">
+            
+            <div class="header-buttons">
+                <a href="index.html" class="back-button">← Voltar</a>
+            </div>
+
+            <h1>Dashboard de Monitoramento</h1>
+
+            <div class="main-grid">
+                <div class="card status-card tilt-card">
+                    <h2>Status</h2>
+                    <p id="status-value">--</p>
+                </div>
+                <div class="card tilt-card">
+                    <h2>Progresso (mm)</h2>
+                    <div class="chart-container">
+                        <canvas id="progresso-chart"></canvas>
+                    </div>
+                </div>
+                <div class="card tilt-card">
+                    <h2>Ângulo X (°)</h2>
+                     <div class="chart-container">
+                        <canvas id="angulo-x-chart"></canvas>
+                    </div>
+                </div>
+                <div class="card tilt-card">
+                    <h2>Ângulo Y (°)</h2>
+                     <div class="chart-container">
+                        <canvas id="angulo-y-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card large-card">
+                    <h2>Histórico de Progresso</h2>
+                    <div class="chart-container-large">
+                        <canvas id="line-chart-progresso"></canvas>
+                    </div>
+                </div>
+                <div class="card large-card" id="raw-data-wrapper">
+                    <h2>Dados Crus</h2>
+                    <div class="metrics-grid" id="raw-data-grid">
+                        </div>
+                </div>
+
+            </div> </div> </main>
+
+    <div id="settings-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configurações</h2>
+                <button id="modal-close-button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                
+                <div class="setting-item">
+                    <label for="color-picker">Cor de Fundo:</label>
+                    <input type="color" id="color-picker" value="#1a1f33"> 
+                </div>
+
+                <div class="setting-item">
+                    <label for="toggle-raw-data">Exibir Dados Crus:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-raw-data" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <label for="toggle-mode">Modo (Simulado / Real):</label>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-mode">
+                        <span class="slider round"></span>
+                    </label>
+                    <span id="mode-status-text">Modo: Simulado</span>
+                </div>
+
+            </div>
         </div>
     </div>
 
-    <!-- Scripts -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="frontend/js/dashboard.js"></script>
 </body>
 </html>

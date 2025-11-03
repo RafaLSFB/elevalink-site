@@ -1,62 +1,169 @@
-/* ==== Tema inspirado no painel da AWS ==== */
+/* === Variáveis de Cor === */
+:root {
+    /* Esta é a variável que o seletor de cores vai mudar */
+    --color-background: #1a1f33; 
+    
+    /* Cores FIXAS baseadas na sua imagem */
+    --color-accent-blue: #2a7aed; /* Azul dos títulos */
+    --color-sidebar-bg: #111827;   /* Cinza-escuro da sidebar */
+    --color-card-bg: #232b40;       /* Azul-escuro dos cards */
+    --color-text-light: #e2e8f0;
+    --color-text-dim: #94a3b8;
+}
+
+/* ==== Tema ==== */
 body {
     font-family: 'Inter', 'Poppins', sans-serif;
-    background-color: #0f172a;
-    color: #e2e8f0;
+    background-color: var(--color-background); 
+    color: var(--color-text-light);
     margin: 0;
     overflow-x: hidden;
+    display: flex;
+    transition: background-color 0.3s ease;
+
+    /* === MODIFICADO: Fade-in para o site inteiro === */
+    opacity: 0; /* Começa invisível */
+    animation: fadeIn 3.0s ease-out forwards; /* Duração de 1 segundo */
 }
 
-/* ==== Fundo animado sutil ==== */
+/* ==== Fundo animado (Desativado) ==== */
 .background-effect {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 20% 20%, rgba(0, 132, 255, 0.08), transparent 60%),
-                radial-gradient(circle at 80% 80%, rgba(0, 255, 204, 0.05), transparent 70%);
-    z-index: 0;
+    display: none;
 }
 
-/* ==== Container principal ==== */
-.container {
+/* ==== Barra Lateral ==== */
+.sidebar {
+    width: 240px;
+    background-color: var(--color-sidebar-bg); 
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    border-right: 1px solid #334155; 
+}
+
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 10px 0;
+}
+
+/* === MODIFICADO: Animação removida daqui === */
+.sidebar-logo {
+    max-width: 100%;
+    height: 60px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    /* A animação agora está no body, então foi removida daqui */
+}
+
+/* === Keyframes para a animação (Usado pelo body) === */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar-menu li {
+    margin-bottom: 10px;
+}
+.sidebar-menu li a {
+    color: var(--color-text-dim);
+    text-decoration: none;
+    font-size: 1rem;
+    display: block;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+.sidebar-menu li a:hover {
+    background-color: var(--color-card-bg);
+    color: var(--color-accent-blue);
+}
+.sidebar-menu li.active a {
+    background-color: var(--color-card-bg);
+    color: var(--color-accent-blue);
+    font-weight: 600;
+}
+
+/* ==== Área de Conteúdo ==== */
+.content-area {
+    flex-grow: 1;
+    margin-left: 240px;
+    padding: 30px;
     position: relative;
     z-index: 1;
-    text-align: center;
-    padding: 60px 30px;
-    max-width: 1400px;
-    margin: 0 auto;
+    background-color: var(--color-background);
+    transition: background-color 0.3s ease;
+}
+.container {
+    position: relative;
+    z-index: 2;
+    text-align: left;
+    padding: 0;
+    max-width: 100%;
+    margin: 0;
 }
 
 /* ==== Títulos ==== */
 .container h1 {
     font-size: 2.5rem;
-    color: #38bdf8;
+    color: var(--color-accent-blue); 
     font-weight: 600;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
 }
-
 .container h2 {
     font-size: 1.6rem;
-    color: #94a3b8;
+    color: var(--color-text-dim);
     margin-top: 40px;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+.header-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
 
-/* ==== Grid de métricas ==== */
-.metrics-grid {
+/* ==== Grid Principal ==== */
+.main-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 25px;
     justify-content: center;
 }
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+.large-card {
+    grid-column: span 2;
+}
+@media (max-width: 900px) {
+    .large-card {
+        grid-column: span 1;
+    }
+}
 
-/* ==== Cartões ==== */
+/* ==== Estilos de Card (Base) ==== */
 .card {
-    background: linear-gradient(145deg, #1e293b, #0f172a);
-    border: 1px solid rgba(56, 189, 248, 0.15);
+    background: var(--color-card-bg); 
+    border: 1px solid #334155;
     border-radius: 16px;
     padding: 25px 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -64,140 +171,241 @@ body {
     text-align: left;
     position: relative;
 }
-
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(56, 189, 248, 0.3);
-    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 8px 30px rgba(0,0,0, 0.5);
+    border-color: var(--color-accent-blue); 
+}
+
+/* ... (Containers de Gráfico) ... */
+.chart-container {
+    width: 100%;
+    height: 180px;
+    position: relative;
+    margin-top: 15px;
+}
+.chart-container-large {
+    width: 100%;
+    height: 300px;
+    position: relative;
+    margin-top: 15px;
+}
+.card canvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* ==== Títulos dos cartões ==== */
 .card h2 {
-    color: #38bdf8;
+    color: var(--color-accent-blue); 
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 10px;
+    margin-top: 0; 
+    text-transform: none;
+    letter-spacing: 0;
 }
 
-/* ==== Valores ==== */
+/* ... (O resto do CSS: p, status, expandable, back-button) ... */
 .card p {
     font-size: 1.4rem;
     font-weight: 600;
-    color: #f8fafc;
+    color: var(--color-text-light);
 }
-
-/* ==== Cores de status ==== */
-.status-card.ok p {
-    color: #22c55e;
-}
-
-.status-card.erro p {
-    color: #ef4444;
-}
-
-/* ==== Cartões expansíveis (dados crus) ==== */
-.expandable-card {
-    cursor: pointer;
-}
-
+.status-card.ok p { color: #22c55e; }
+.status-card.erro p { color: #ef4444; }
+.expandable-card { cursor: pointer; }
 .expandable-card .details {
     margin-top: 10px;
     display: none;
-    border-top: 1px solid rgba(56, 189, 248, 0.2);
+    border-top: 1px solid #334155;
     padding-top: 10px;
 }
-
 .expandable-card .details p {
     font-size: 0.95rem;
-    color: #cbd5e1;
+    color: var(--color-text-dim);
     margin: 5px 0;
 }
-
-/* ==== Animação de expansão ==== */
-.expandable-card.open {
-    background: linear-gradient(145deg, #1e293b, #162032);
+.expandable-card.open { 
+    background: color-mix(in srgb, var(--color-card-bg) 80%, black);
 }
-
 .expandable-card.open .details {
     display: block;
-    animation: fadeIn 0.3s ease-in-out;
+    animation: fadeInDetails 0.3s ease-in-out;
 }
-
-@keyframes fadeIn {
+@keyframes fadeInDetails {
     from { opacity: 0; transform: translateY(-5px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ==== Botão de voltar ==== */
 .back-button {
-    position: fixed;
-    top: 25px;
-    left: 25px;
-    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    position: static;
+    background: var(--color-accent-blue); 
     color: white;
     text-decoration: none;
     padding: 10px 22px;
     border-radius: 8px;
     font-weight: 600;
     font-size: 1rem;
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+    box-shadow: 0 0 20px rgba(42, 122, 237, 0.3);
     transition: all 0.3s ease;
     z-index: 1000;
 }
-
 .back-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 30px rgba(56, 189, 248, 0.6);
+    box-shadow: 0 0 30px rgba(42, 122, 237, 0.6);
 }
 
-/* ==== Botão de alternância Simulado/Real ==== */
-.mode-button {
+
+/* ==== Estilos do Modal de Configurações ==== */
+.modal-overlay {
     position: fixed;
-    top: 25px;
-    left: 150px;
-    background: linear-gradient(90deg, #22c55e, #16a34a);
-    color: white;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+.modal-content {
+    background: var(--color-card-bg);
+    padding: 25px 30px;
+    border-radius: 16px;
+    border: 1px solid #334155;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 500px;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+.modal-header h2 {
+    margin: 0;
+    color: var(--color-text-light);
+    font-size: 1.5rem;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-top: 0; 
+}
+.modal-close {
+    background: transparent;
     border: none;
-    padding: 10px 22px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 1rem;
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    color: var(--color-text-dim);
+    font-size: 2.2rem;
     cursor: pointer;
-    z-index: 1000;
-    transition: all 0.3s ease;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+.modal-close:hover {
+    color: var(--color-text-light);
+}
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+.setting-item:last-child {
+    margin-bottom: 10px;
+}
+.setting-item label {
+    color: var(--color-text-dim);
+    font-size: 1rem;
+    font-weight: 500;
+}
+.setting-item #mode-status-text {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    margin-left: 10px;
+    flex-shrink: 0;
+    width: 100px;
+    text-align: right;
+}
+input[type="color"] {
+    width: 50px;
+    height: 30px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
 }
 
-.mode-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
+/* ==== Estilos do Toggle Switch ==== */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 54px;
+    height: 30px;
+    margin-left: 15px;
+    flex-shrink: 0;
 }
+.switch input { display: none; }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #334155;
+    transition: .4s;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+input:checked + .slider {
+    background-color: var(--color-accent-blue); 
+}
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+.slider.round { border-radius: 30px; }
+.slider.round:before { border-radius: 50%; }
+
 
 /* ==== Responsividade ==== */
 @media (max-width: 768px) {
-    .container h1 {
-        font-size: 1.9rem;
+    body {
+        flex-direction: column;
     }
-
-    .container h2 {
-        font-size: 1.3rem;
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid #334155;
     }
-
-    .card p {
-        font-size: 1.2rem;
+    .content-area {
+        margin-left: 0;
+        padding: 20px;
     }
-
-    .metrics-grid {
-        gap: 20px;
+    .header-buttons {
+        flex-direction: column;
     }
-
-    .mode-button {
-        top: 70px;
-        left: 20px;
-    }
-
-    .back-button {
-        top: 25px;
-        left: 20px;
+    .container h1 { font-size: 1.9rem; }
+    .container h2 { font-size: 1.3rem; }
+    .card p { font-size: 1.2rem; }
+    .main-grid { gap: 20px; }
+    .metrics-grid { gap: 20px; }
+    .back-button { 
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
     }
 }
