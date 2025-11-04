@@ -1,5 +1,5 @@
 const API_BASE_URL = 'http://127.0.0.1:5000/api/dados';
-const UPDATE_INTERVAL = 500;
+const UPDATE_INTERVAL = 3000;
 const rawDataGrid = document.getElementById('raw-data-grid');
 
 const settingsButton = document.getElementById('settings-button');
@@ -61,7 +61,7 @@ function updateMetrics(data) {
         statusCardElement.classList.add('erro');
         statusCardElement.classList.remove('ok');
     }
-    const MAX_PROGRESSO = 1000;
+    const MAX_PROGRESSO = 1500;
     const MAX_ANGULO = 90;
     
     updateDoughnutChart(progressoChartInstance, data.progresso, MAX_PROGRESSO, 'mm');
@@ -112,7 +112,7 @@ function updateRawData(data) {
 }
 function generateSimulatedData() {
     return {
-        "progresso": Math.random() * 1000,
+        "progresso": Math.random() * 1500,
         "angulo_x": Math.random() * 180 - 90,
         "angulo_y": Math.random() * 180 - 90,
         "status": Math.random() > 0.1 ? 1 : 0,
