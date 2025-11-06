@@ -7,7 +7,8 @@
 }
 
 body {
-  background-color: #3c3535;
+  /* ✅ COR ÚNICA APLICADA AQUI */
+  background-color: #0f0f1a;
   color: #fff;
   scroll-behavior: smooth;
 }
@@ -19,7 +20,8 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(circle at center, #0f0f1a 0%, #0a0a0a 100%);
+  /* ✅ FUNDO UNIFICADO */
+  background: #0f0f1a;
   text-align: center;
 }
 
@@ -48,11 +50,13 @@ body {
 .description {
   padding: 100px 15%;
   text-align: center;
-  background: #0a0a0a;
+  /* ✅ FUNDO UNIFICADO */
+  background: #0f0f1a;
 }
 
 .description.alt {
-  background: #111222;
+  /* ✅ FUNDO UNIFICADO (removida a cor alternativa) */
+  background: #0f0f1a;
 }
 
 .description h2 {
@@ -82,6 +86,7 @@ body {
 .models-section {
   padding: 80px 5%;
   text-align: center;
+  /* ✅ FUNDO UNIFICADO */
   background: #0f0f1a;
 }
 
@@ -129,7 +134,8 @@ model-viewer {
 /* ==== Seção da equipe ==== */
 .team-section {
   padding: 100px 10%;
-  background: linear-gradient(180deg, #0a0a0a 0%, #0f0f1a 100%);
+  /* ✅ FUNDO UNIFICADO */
+  background: #0f0f1a;
   text-align: center;
 }
 
@@ -211,45 +217,12 @@ model-viewer {
   text-shadow: 0 0 10px #00aaff;
 }
 
-/* ==== Responsividade ==== */
-@media (max-width: 900px) {
-  .team {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .model-card {
-    width: 95%;
-  }
-  model-viewer {
-    height: 500px;
-  }
-}
-
-@media (max-width: 600px) {
-  .team {
-    grid-template-columns: 1fr;
-  }
-  .model-card {
-    width: 100%;
-  }
-  model-viewer {
-    height: 400px;
-  }
-}
-
-/* ==== Footer ==== */
-footer {
-  background: #000;
-  text-align: center;
-  padding: 20px;
-  color: #666;
-  font-size: 0.9rem;
-}
-
 /* ==== Seção da Dashboard ==== */
 .dashboard-section {
   padding: 100px 10%;
   text-align: center;
-  background: linear-gradient(180deg, #0f0f1a 0%, #0a0a0a 100%);
+  /* ✅ FUNDO UNIFICADO */
+  background: #0f0f1a;
 }
 
 .dashboard-section h2 {
@@ -257,7 +230,7 @@ footer {
   margin-bottom: 20px;
   background: linear-gradient(90deg, #0066cc, #00aaff);
   -webkit-background-clip: text;
-  background-clip: text; /* ✅ adicionado para compatibilidade */
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -286,7 +259,9 @@ footer {
 }
 
 .logo-fade {
-  width: 600px; /* ajuste o tamanho conforme quiser */
+  /* ✅ AJUSTE RESPONSIVO (não estoura mais a tela) */
+  width: 90%;
+  max-width: 600px;
   opacity: 0;
   transform: translateX(-50px);
   animation: fadeInLeft 3s ease forwards;
@@ -302,4 +277,63 @@ footer {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/* ==== Footer ==== */
+footer {
+  /* (Deixei o footer preto para uma divisão sutil) */
+  background: #000;
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+
+/* ==== Responsividade ==== */
+@media (max-width: 900px) {
+  .team {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .model-card {
+    width: 95%;
+  }
+  model-viewer {
+    height: 500px;
+  }
+}
+
+@media (max-width: 600px) {
+  .team {
+    grid-template-columns: 1fr;
+  }
+  .model-card {
+    width: 100%;
+  }
+  model-viewer {
+    height: 400px;
+  }
+
+  /* ✅ AJUSTES RESPONSIVOS PARA CELULAR */
+  .hero-title {
+    font-size: 3.5rem; /* Fonte menor */
+  }
+
+  .description h2,
+  .models-section h2,
+  .team-section h2,
+  .dashboard-section h2 {
+    font-size: 2rem; /* Fonte menor */
+  }
+
+  .description,
+  .team-section,
+  .dashboard-section {
+    padding: 60px 5%; /* Padding menor */
+  }
+
+  .models-section {
+     padding: 60px 0; /* Padding menor */
+  }
+  /* ✅ FIM DOS AJUSTES */
 }
