@@ -409,3 +409,40 @@ input:checked + .slider:before {
         text-align: center;
     }
 }
+
+/* ==== ESTILOS ADICIONADOS PARA O CARD LORA ==== */
+.lora-metrics {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.lora-metric {
+    text-align: center;
+}
+
+.lora-metric span {
+    font-size: 0.9rem;
+    color: var(--color-text-dim);
+    margin-bottom: 5px;
+    display: block;
+}
+
+.lora-metric p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--color-text-light);
+}
+
+/* Cores dinâmicas para o RSSI */
+#lora-status-card.ok #lora-rssi-value {
+    color: #22c55e; /* Verde */
+}
+#lora-status-card.warn #lora-rssi-value {
+    color: #f59e0b; /* Laranja */
+}
+#lora-status-card.erro #lora-rssi-value {
+    color: #ef4444; /* Vermelho */
+}

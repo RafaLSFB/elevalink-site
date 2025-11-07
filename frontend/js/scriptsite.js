@@ -40,44 +40,7 @@ window.addEventListener('load', () => {
   setTimeout(() => heroTitle.classList.add('show'), 1000);
 });
 
-// ==== Visualizador STL ====
-const container = document.getElementById("viewer3d");
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, container.clientWidth / 400, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-
-renderer.setSize(container.clientWidth, 400);
-renderer.setClearColor(0x000000, 0);
-container.appendChild(renderer.domElement);
-
-const light1 = new THREE.DirectionalLight(0x00aaff, 1);
-light1.position.set(1, 1, 1);
-scene.add(light1);
-
-const light2 = new THREE.AmbientLight(0x404040, 1.5);
-scene.add(light2);
-
-const loader = new THREE.STLLoader();
-loader.load("dispositivo.stl", geometry => {
-  const material = new THREE.MeshPhongMaterial({ color: 0x00aaff, shininess: 80 });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.rotation.x = -Math.PI / 2;
-  mesh.position.y = -0.2;
-  scene.add(mesh);
-
-  // Centraliza o modelo
-  geometry.computeBoundingBox();
-  const center = new THREE.Vector3();
-  geometry.boundingBox.getCenter(center);
-  mesh.position.sub(center);
-
-  const controls = new THREE.OrbitControls(camera, renderer.domElement);
-  camera.position.set(2, 2, 2);
-  controls.update();
-
-  function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-  }
-  animate();
-});
+// ==== Visualizador STL (REMOVIDO) ====
+// O código THREE.js que estava aqui foi removido
+// pois seu HTML está usando <model-viewer>
+// para carregar os modelos .glb.

@@ -34,6 +34,20 @@
                     <h2>Status</h2>
                     <p id="status-value">--</p>
                 </div>
+
+                <div class="card tilt-card" id="lora-status-card">
+                    <h2>Conexão LoRa</h2>
+                    <div class="lora-metrics">
+                        <div class="lora-metric">
+                            <span>RSSI</span>
+                            <p id="lora-rssi-value">-- dBm</p>
+                        </div>
+                        <div class="lora-metric">
+                            <span>SNR</span>
+                            <p id="lora-snr-value">-- dB</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="card tilt-card">
                     <h2>Progresso (mm)</h2>
                     <div class="chart-container">
@@ -65,7 +79,9 @@
                         </div>
                 </div>
 
-            </div> </div> </main>
+            </div> 
+        </div> 
+    </main>
 
     <div id="settings-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
@@ -101,9 +117,11 @@
         </div>
     </div>
 
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    
     <script src="frontend/js/dashboard.js"></script>
 </body>
 </html>
