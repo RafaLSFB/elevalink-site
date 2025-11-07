@@ -1,21 +1,49 @@
-// === VARIÁVEIS GLOBAIS (MODIFICADAS PARA O NOVO BROKER) ===
-const MQTT_BROKER = "iot.eclipse.org";  // MODIFICADO
-const MQTT_PORT = 443;                  // MODIFICADO: Porta 443 (HTTPS/WSS)
-const MQTT_PATH = "/ws";                // MODIFICADO: Necessário para este broker
+// === VARIÁVEIS GLOBAIS ===
+// Conectando ao HiveMQ (Estável)
+const MQTT_BROKER = "broker.hivemq.com";
+const MQTT_PORT = 8081; // Porta WSS (segura) do HiveMQ
+const MQTT_PATH = "/mqtt"; // Caminho (path) do HiveMQ
 const MQTT_CLIENT_ID = "DashboardCliente_" + Math.random().toString(16).substr(2, 8);
 const UPDATE_INTERVAL = 3000; 
 
-// Tópicos (permanecem os mesmos)
 const MQTT_DATA_TOPIC = "heltec/gateway/data";
 const MQTT_STATUS_TOPIC = "heltec/gateway/status"; 
 
 let mqttClient = null;
-// ... (resto das variáveis globais) ...
+
+// Variáveis do DOM (corrigido o bug 'modal is not defined')
 const rawDataGrid = document.getElementById('raw-data-grid');
 const settingsButton = document.getElementById('settings-button');
-// ... (etc) ...
+const modal = document.getElementById('settings-modal');
+const modalCloseButton = document.getElementById('modal-close-button');
+const colorPicker = document.getElementById('color-picker');
+const toggleRawData = document.getElementById('toggle-raw-data');
+const toggleMode = document.getElementById('toggle-mode');
+const modeStatusText = document.getElementById('mode-status-text');
+const rawDataWrapper = document.getElementById('raw-data-wrapper');
 
-// ... (função switchMode - sem alterações) ...
+let expandedStates = {};
+let mode = 'simulado';
+let updateIntervalId = null;
+
+let progressoChartInstance = null;
+let anguloXChartInstance = null;
+let anguloYChartInstance = null;
+let lineChartInstance = null;
+
+let lineChartData = {
+    labels: [],
+    datasets: [{
+        label: 'Progresso (mm)',
+        data: [],
+        borderColor: '#2a7aed', 
+        backgroundColor: 'rgba(42, 122, 237, 0.1)', 
+        fill: true,
+        tension: 0.3
+    }]
+};
+
+// === FUNÇÃO switchMode ===
 function switchMode() {
     mode = toggleMode.checked ? 'real' : 'simulado';
     modeStatusText.textContent = `Modo: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
@@ -36,32 +64,132 @@ function switchMode() {
     }
 }
 
-// ... (função runSimulation - sem alterações) ...
-// ... (funções updateMetrics, createExpandableCard, updateRawData, generateSimulatedData, resetValues - sem alterações) ...
+// === FUNÇÃO runSimulation (Modo Simulado) ===
+async function runSimulation() {
+    try {
+        if (mode === 'simulado') {
+            const latestData = generateSimulatedData();
+            updateMetrics(latestData);
+            if (toggleRawData.checked) {
+                updateRawData(latestData);
+            }
+        }
+    } catch (error) {
+        console.error('Falha ao atualizar dashboard (simulado):', error);
+    }
+}
 
+// (Funções de dados: updateMetrics, createExpandableCard, updateRawData, generateSimulatedData)
+function updateMetrics(data) {
+    if (!data) return;
+    const statusValueElement = document.getElementById('status-value');
+    const statusCardElement = statusValueElement.closest('.card');
+    
+    if (statusValueElement.textContent !== 'Heltec Desconectado') {
+        if (data.status === 1) {
+            statusValueElement.textContent = 'OK'; 
+            statusCardElement.classList.add('ok');
+            statusCardElement.classList.remove('erro');
+        } else {
+            statusValueElement.textContent = 'ERRO'; 
+            statusCardElement.classList.add('erro');
+            statusCardElement.classList.remove('ok');
+        }
+    }
+    const MAX_PROGRESSO = 1500;
+    const MAX_ANGULO = 90;
+    updateDoughnutChart(progressoChartInstance, data.progresso, MAX_PROGRESSO, 'mm');
+    updateDoughnutChart(anguloXChartInstance, data.angulo_x, MAX_ANGULO, '°');
+    updateDoughnutChart(anguloYChartInstance, data.angulo_y, MAX_ANGULO, '°');
+    updateLineChart(lineChartInstance, data.progresso);
+}
+function createExpandableCard(title, fields) {
+    // ... (código do card - sem alteração) ...
+    const card = document.createElement('div');
+    card.classList.add('card', 'tilt-card', 'expandable-card');
+    const header = document.createElement('h2');
+    header.textContent = title;
+    card.appendChild(header);
+    const details = document.createElement('div');
+    details.classList.add('details');
+    for (const [key, value] of Object.entries(fields)) {
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${key}:</strong> ${value}`;
+        details.appendChild(p);
+    }
+    const isExpanded = expandedStates[title] ?? false;
+    details.style.display = isExpanded ? 'block' : 'none';
+    card.addEventListener('click', () => {
+        const isVisible = details.style.display === 'block';
+        details.style.display = isVisible ? 'none' : 'block';
+        expandedStates[title] = !isVisible;
+    });
+    card.appendChild(details);
+    rawDataGrid.appendChild(card);
+}
+function updateRawData(data) {
+    // ... (código do raw data - sem alteração) ...
+    if (!data) return;
+    const currentStates = { ...expandedStates };
+    rawDataGrid.innerHTML = '';
+    expandedStates = { ...currentStates };
+    const bmi160 = data.bmi160 || { accel:{x:'--',y:'--',z:'--'}, gyro:{x:'--',y:'--',z:'--'} };
+    const tfluna = data.tfluna || { distance:'--', temperature:'--', strength:'--' };
+    createExpandableCard('BMI160', { 'Accel X': bmi160.accel.x, 'Accel Y': bmi160.accel.y, 'Accel Z': bmi160.accel.z, 'Gyro X': bmi160.gyro.x, 'Gyro Y': bmi160.gyro.y, 'Gyro Z': bmi160.gyro.z });
+    createExpandableCard('TFLUNA', { 'Distance': tfluna.distance, 'Temperature': tfluna.temperature, 'Strength': tfluna.strength });
+}
+function generateSimulatedData() {
+    // ... (código do simulado - sem alteração) ...
+    return {
+        "progresso": Math.random() * 1500,
+        "angulo_x": Math.random() * 180 - 90,
+        "angulo_y": Math.random() * 180 - 90,
+        "status": Math.random() > 0.1 ? 1 : 0,
+        "bmi160": { "accel": { "x": (Math.random()*4-2).toFixed(2), "y":(Math.random()*4-2).toFixed(2), "z":(Math.random()*4-2).toFixed(2) }, "gyro": { "x":(Math.random()*500-250).toFixed(2), "y":(Math.random()*500-250).toFixed(2), "z":(Math.random()*500-250).toFixed(2) } },
+        "tfluna": { "distance":(Math.random()*1990+10).toFixed(1), "temperature":(Math.random()*20+20).toFixed(1), "strength": Math.floor(Math.random()*100) },
+    };
+}
 
-// === FUNÇÕES MQTT (MODIFICADAS) ===
+function resetValues() {
+    // ... (código de reset - sem alteração) ...
+    const statusValueElement = document.getElementById('status-value');
+    if (statusValueElement.textContent !== 'Heltec Desconectado') {
+        statusValueElement.textContent = '--';
+        const statusCardElement = statusValueElement.closest('.card');
+        statusCardElement.classList.remove('ok', 'erro');
+    }
+    const loraCard = document.getElementById('lora-status-card');
+    if (loraCard) {
+        document.getElementById('lora-rssi-value').textContent = '-- dBm';
+        document.getElementById('lora-snr-value').textContent = '-- dB';
+        loraCard.classList.remove('ok', 'warn', 'erro');
+    }
+    rawDataGrid.innerHTML = '';
+    expandedStates = {};
+    updateDoughnutChart(progressoChartInstance, 0, 1000, 'mm');
+    updateDoughnutChart(anguloXChartInstance, 0, 90, '°');
+    updateDoughnutChart(anguloYChartInstance, 0, 90, '°');
+    if (lineChartInstance) {
+        lineChartInstance.data.labels = [];
+        lineChartInstance.data.datasets[0].data = [];
+        lineChartInstance.update();
+    }
+}
 
-/**
- * Inicializa e configura o cliente MQTT
- */
+// === FUNÇÕES MQTT ===
+
 function setupMQTT() {
     if (!mqttClient) {
-        // MODIFICADO: O construtor agora inclui o MQTT_PATH
+        // Conecta ao HiveMQ
         mqttClient = new Paho.MQTT.Client(MQTT_BROKER, MQTT_PORT, MQTT_PATH, MQTT_CLIENT_ID);
-        
-        // Define as funções de callback
         mqttClient.onConnectionLost = onConnectionLost;
         mqttClient.onMessageArrived = onMessageArrived;
     }
 }
 
-/**
- * Tenta se conectar ao broker MQTT
- */
 function connectMQTT() {
     if (mqttClient && !mqttClient.isConnected()) {
-        console.log(`Conectando ao broker MQTT: ${MQTT_BROKER}:${MQTT_PORT}${MQTT_PATH}...`); // Log atualizado
+        console.log(`Conectando ao broker MQTT: ${MQTT_BROKER}:${MQTT_PORT}${MQTT_PATH}...`); 
         try {
             mqttClient.connect({
                 onSuccess: onConnect, 
@@ -70,10 +198,9 @@ function connectMQTT() {
                     resetValues(); 
                     handleGatewayStatus("offline"); 
                 },
-                useSSL: true, // MODIFICADO: Continua 'true' para usar WSS
+                useSSL: true, 
                 cleanSession: true,
-                reconnect: true, // Adicionado para robustez
-                timeout: 10 // Aumenta o timeout para 10 segundos
+                timeout: 10 
             });
         } catch (e) {
             console.error("Erro ao tentar conectar:", e);
@@ -81,14 +208,6 @@ function connectMQTT() {
     }
 }
 
-// ... (Restante do arquivo: onConnect, onConnectionLost, onMessageArrived, handleGatewayStatus, updateLoRaStats, funções de gráfico, initializeDashboard) ...
-// NENHUMA OUTRA MUDANÇA É NECESSÁRIA.
-// As funções abaixo são apenas para garantir que o arquivo esteja completo
-// para você copiar e colar.
-
-/**
- * Callback: Chamado quando o cliente se conecta com sucesso
- */
 function onConnect() {
     console.log("Conectado ao MQTT!");
     console.log("Assinando o tópico de DADOS:", MQTT_DATA_TOPIC);
@@ -97,9 +216,6 @@ function onConnect() {
     mqttClient.subscribe(MQTT_STATUS_TOPIC);
 }
 
-/**
- * Callback: Chamado quando a conexão com o BROKER é perdida
- */
 function onConnectionLost(responseObject) {
     if (responseObject.errorCode !== 0) {
         console.error("Conexão MQTT (com Broker) perdida:", responseObject.errorMessage);
@@ -108,16 +224,13 @@ function onConnectionLost(responseObject) {
         const statusCardElement = statusValueElement.closest('.card');
         statusCardElement.classList.add('erro');
         statusCardElement.classList.remove('ok');
-        resetValues(); 
+        resetValues();
         if(mode === 'real') {
             setTimeout(connectMQTT, 5000); 
         }
     }
 }
 
-/**
- * Callback: Chamado quando uma nova mensagem chega de QUALQUER tópico
- */
 function onMessageArrived(message) {
     try {
         if (message.destinationName === MQTT_DATA_TOPIC) {
@@ -141,9 +254,6 @@ function onMessageArrived(message) {
     }
 }
 
-/**
- * Atualiza o card de status principal (Heltec Conectado/Desconectado)
- */
 function handleGatewayStatus(status) {
     const statusValueElement = document.getElementById('status-value');
     const statusCardElement = statusValueElement.closest('.card');
@@ -159,9 +269,6 @@ function handleGatewayStatus(status) {
     }
 }
 
-/**
- * Atualiza o card de status do LoRa (RSSI/SNR)
- */
 function updateLoRaStats(rssi, snr) {
     const rssiElement = document.getElementById('lora-rssi-value');
     const snrElement = document.getElementById('lora-snr-value');
@@ -253,53 +360,6 @@ function updateLineChart(chart, newValue) {
     }
     chart.update();
 }
-// (Funções de dados que você já tinha)
-function updateRawData(data) {
-    if (!data) return;
-    const currentStates = { ...expandedStates };
-    rawDataGrid.innerHTML = '';
-    expandedStates = { ...currentStates };
-    const bmi160 = data.bmi160 || { accel:{x:'--',y:'--',z:'--'}, gyro:{x:'--',y:'--',z:'--'} };
-    const tfluna = data.tfluna || { distance:'--', temperature:'--', strength:'--' };
-    createExpandableCard('BMI160', { 'Accel X': bmi160.accel.x, 'Accel Y': bmi160.accel.y, 'Accel Z': bmi160.accel.z, 'Gyro X': bmi160.gyro.x, 'Gyro Y': bmi160.gyro.y, 'Gyro Z': bmi160.gyro.z });
-    createExpandableCard('TFLUNA', { 'Distance': tfluna.distance, 'Temperature': tfluna.temperature, 'Strength': tfluna.strength });
-}
-function generateSimulatedData() {
-    return {
-        "progresso": Math.random() * 1500,
-        "angulo_x": Math.random() * 180 - 90,
-        "angulo_y": Math.random() * 180 - 90,
-        "status": Math.random() > 0.1 ? 1 : 0,
-        "bmi160": { "accel": { "x": (Math.random()*4-2).toFixed(2), "y":(Math.random()*4-2).toFixed(2), "z":(Math.random()*4-2).toFixed(2) }, "gyro": { "x":(Math.random()*500-250).toFixed(2), "y":(Math.random()*500-250).toFixed(2), "z":(Math.random()*500-250).toFixed(2) } },
-        "tfluna": { "distance":(Math.random()*1990+10).toFixed(1), "temperature":(Math.random()*20+20).toFixed(1), "strength": Math.floor(Math.random()*100) },
-    };
-}
-function resetValues() {
-    const statusValueElement = document.getElementById('status-value');
-    if (statusValueElement.textContent !== 'Heltec Desconectado') {
-        statusValueElement.textContent = '--';
-        const statusCardElement = statusValueElement.closest('.card');
-        statusCardElement.classList.remove('ok', 'erro');
-    }
-    const loraCard = document.getElementById('lora-status-card');
-    if (loraCard) {
-        document.getElementById('lora-rssi-value').textContent = '-- dBm';
-        document.getElementById('lora-snr-value').textContent = '-- dB';
-        loraCard.classList.remove('ok', 'warn', 'erro');
-    }
-    rawDataGrid.innerHTML = '';
-    expandedStates = {};
-    updateDoughnutChart(progressoChartInstance, 0, 1000, 'mm');
-    updateDoughnutChart(anguloXChartInstance, 0, 90, '°');
-    updateDoughnutChart(anguloYChartInstance, 0, 90, '°');
-    if (lineChartInstance) {
-        lineChartInstance.data.labels = [];
-        lineChartInstance.data.datasets[0].data = [];
-        lineChartInstance.update();
-    }
-}
-// === FIM DAS FUNÇÕES DE GRÁFICO ===
-
 
 // === FUNÇÃO DE INICIALIZAÇÃO ===
 function initializeDashboard() {
@@ -342,7 +402,7 @@ function initializeDashboard() {
         anguloYChartInstance = createDoughnutChart('angulo-y-chart', 'Ângulo Y');
         const lineCtx = document.getElementById('line-chart-progresso').getContext('2d');
         lineChartInstance = new Chart(lineCtx, {
-            type: 'line', data: lineChartData, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } } }, plugins: { legend: { display: false } } }
+            type: 'line', data: lineChartData, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#98a3b8' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#98a3b8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } } }, plugins: { legend: { display: false } } }
         });
     } catch (e) {
         console.error("Erro ao inicializar gráficos:", e);
