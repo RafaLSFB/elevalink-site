@@ -1,7 +1,7 @@
-// === VARIÁVEIS GLOBAIS ===
+// === VARIÁVEIS GLOBAIS (CORRIGIDAS PARA WSS/HTTPS) ===
 // Configurações do MQTT
 const MQTT_BROKER = "broker.hivemq.com"; // Broker público
-const MQTT_PORT = 8000; // Porta de WebSockets (para navegadores)
+const MQTT_PORT = 8081; // IMPORTANTE: Porta 8081 para WSS (conexão segura)
 const MQTT_CLIENT_ID = "DashboardCliente_" + Math.random().toString(16).substr(2, 8);
 const UPDATE_INTERVAL = 3000; // Intervalo para o modo SIMULADO
 
@@ -229,7 +229,7 @@ function connectMQTT() {
                     resetValues(); 
                     handleGatewayStatus("offline"); // Mostra desconectado se falhar
                 },
-                useSSL: false,
+                useSSL: true,
                 cleanSession: true
             });
         } catch (e) {
