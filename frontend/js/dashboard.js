@@ -104,7 +104,6 @@ function updateMetrics(data) {
     updateLineChart(lineChartInstance, data.progresso);
 }
 function createExpandableCard(title, fields) {
-    // ... (código do card - sem alteração) ...
     const card = document.createElement('div');
     card.classList.add('card', 'tilt-card', 'expandable-card');
     const header = document.createElement('h2');
@@ -128,7 +127,6 @@ function createExpandableCard(title, fields) {
     rawDataGrid.appendChild(card);
 }
 function updateRawData(data) {
-    // ... (código do raw data - sem alteração) ...
     if (!data) return;
     const currentStates = { ...expandedStates };
     rawDataGrid.innerHTML = '';
@@ -139,7 +137,6 @@ function updateRawData(data) {
     createExpandableCard('TFLUNA', { 'Distance': tfluna.distance, 'Temperature': tfluna.temperature, 'Strength': tfluna.strength });
 }
 function generateSimulatedData() {
-    // ... (código do simulado - sem alteração) ...
     return {
         "progresso": Math.random() * 1500,
         "angulo_x": Math.random() * 180 - 90,
@@ -151,7 +148,6 @@ function generateSimulatedData() {
 }
 
 function resetValues() {
-    // ... (código de reset - sem alteração) ...
     const statusValueElement = document.getElementById('status-value');
     if (statusValueElement.textContent !== 'Heltec Desconectado') {
         statusValueElement.textContent = '--';
@@ -224,7 +220,7 @@ function onConnectionLost(responseObject) {
         const statusCardElement = statusValueElement.closest('.card');
         statusCardElement.classList.add('erro');
         statusCardElement.classList.remove('ok');
-        resetValues();
+        resetValues(); 
         if(mode === 'real') {
             setTimeout(connectMQTT, 5000); 
         }

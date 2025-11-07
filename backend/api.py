@@ -64,7 +64,7 @@ def get_latest_real_data():
 
 # =============================
 # ROTAS
-# =============================
+# ============================= 
 @app.route('/')
 def index():
     return "API do Elevador está funcionando!"
