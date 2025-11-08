@@ -1,11 +1,11 @@
 // ==== Seção de equipe ====
 const team = [
-  { nome: "César Augusto", linkedin: "https://www.linkedin.com/in/c%C3%A9sar-augusto-83b97237b", telefone: "(68) 99205-8721", foto: "imagens/Cesar.jpg" },
-  { nome: "Fernando Castanha", linkedin: "https://www.linkedin.com/in/fernando-castanha-tornelli-235412352/", telefone: "(11) 99136-7940", foto: "imagens/Fernando.jpg" },
-  { nome: "Gabriel Assis", linkedin: "https://www.linkedin.com/in/gabriel-assis-7044b938a/", telefone: "(11) 94523-5478", foto: "imagens/Gabriel.jpg" },
-  { nome: "Luiz Barros", linkedin: "https://www.linkedin.com/in/luizhenriquebarros/", telefone: "(11) 99410-9391", foto: "imagens/Luiz.jpg" },
-  { nome: "Nicholas Maretto", linkedin: "https://www.linkedin.com/in/nicmaretto", telefone: "(11) 97517-1310", foto: "imagens/Nicholas.jpg" },
-  { nome: "Rafael Lucca Bazan", linkedin: "https://www.linkedin.com/in/rafaelluccabazan", telefone: "(11) 98811-5600", foto: "imagens/Rafael.jpg" },
+  { nome: "César Augusto", linkedin: "https://www.linkedin.com/in/c%C3%A9sar-augusto-83b97237b", telefone: "ceaugustofilho6@gmail.com", foto: "imagens/Cesar.jpg" },
+  { nome: "Fernando Castanha", linkedin: "https://www.linkedin.com/in/fernando-castanha-tornelli-235412352/", telefone: "Fctornelli@gmail.com", foto: "imagens/Fernando.jpg" },
+  { nome: "Gabriel Assis", linkedin: "https://www.linkedin.com/in/gabriel-assis-7044b938a/", telefone: "Gabriel.dge.assis@gmail.com", foto: "imagens/Gabriel.jpg" },
+  { nome: "Luiz Barros", linkedin: "https://www.linkedin.com/in/luizhenriquebarros/", telefone: "luizh.barros1109@gmail.com", foto: "imagens/Luiz.jpg" },
+  { nome: "Nicholas Maretto", linkedin: "https://www.linkedin.com/in/nicmaretto", telefone: "nicmarett13@gmail.com", foto: "imagens/Nicholas.jpg" },
+  { nome: "Rafael Lucca", linkedin: "https://www.linkedin.com/in/rafaelluccabazan", telefone: "rafaelluccabazan@gmail.com", foto: "imagens/Rafael.jpg" },
 ]
 
 const teamContainer = document.querySelector('.team');

@@ -1,7 +1,7 @@
 // === VARIÁVEIS GLOBAIS ===
 // Conectando ao HiveMQ (Estável)
 const MQTT_BROKER = "broker.hivemq.com";
-const MQTT_PORT = 8081; // Porta WSS (segura) do HiveMQ
+const MQTT_PORT = 1883; // Porta WSS (segura) do HiveMQ
 const MQTT_PATH = "/mqtt"; // Caminho (path) do HiveMQ
 const MQTT_CLIENT_ID = "DashboardCliente_" + Math.random().toString(16).substr(2, 8);
 const UPDATE_INTERVAL = 3000; 
